@@ -56,6 +56,12 @@ Run `./jobfinder --help` for all available search and output options.
 
 ## Go library
 
+Add the finder package to your module:
+
+```sh
+go get github.com/akmalfairuz/job-hunter/finder
+```
+
 ```go
 package main
 
