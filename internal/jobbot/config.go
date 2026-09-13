@@ -106,7 +106,7 @@ func (config Config) Validate() error {
 	case config.Scheduler.RunTimeout <= 0:
 		return errors.New("SCHEDULER_RUN_TIMEOUT must be greater than zero")
 	}
-	if _, err := chatCompletionsURL(config.LLM.BaseURL); err != nil {
+	if _, err := openAIBaseURL(config.LLM.BaseURL); err != nil {
 		return fmt.Errorf("LLM_BASE_URL: %w", err)
 	}
 	return nil
