@@ -1,0 +1,31 @@
+services:
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-jobbot}
+      MYSQL_USER: ${MYSQL_USER:-jobbot}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?Set MYSQL_PASSWORD in .env}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Set MYSQL_ROOT_PASSWORD in .env}
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./migrations/001_jobbot.sql:/docker-entrypoint-initdb.d/001_jobbot.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p\"$$MYSQL_ROOT_PASSWORD\" --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+    restart: unless-stopped
+
+  jobbot:
+    image: ghcr.io/akmalfairuz/job-hunter:latest
+    depends_on:
+      mysql:
+        condition: service_healthy
+    env_file:
+      - .env
+    pull_policy: always
+    restart: unless-stopped
+
+volumes:
+  mysql-data:

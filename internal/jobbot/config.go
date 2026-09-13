@@ -4,12 +4,14 @@ package jobbot
 import (
 	"errors"
 	"fmt"
+	"net"
 	"os"
 	"strconv"
 	"strings"
 	"time"
 
 	env "github.com/caarlos0/env/v11"
+	"github.com/go-sql-driver/mysql"
 	"github.com/joho/godotenv"
 )
 
@@ -30,10 +32,27 @@ type DiscordConfig struct {
 }
 
 type DatabaseConfig struct {
-	DSN             string        `env:"DSN,required"`
+	Host            string        `env:"HOST" envDefault:"mysql"`
+	Port            uint16        `env:"PORT" envDefault:"3306"`
+	User            string        `env:"USER" envDefault:"jobbot"`
+	Password        string        `env:"PASSWORD,required"`
+	Database        string        `env:"DATABASE" envDefault:"jobbot"`
 	MaxOpenConns    int           `env:"MAX_OPEN_CONNS" envDefault:"10"`
 	MaxIdleConns    int           `env:"MAX_IDLE_CONNS" envDefault:"10"`
 	ConnMaxLifetime time.Duration `env:"CONN_MAX_LIFETIME" envDefault:"3m"`
+}
+
+// DSN derives the MySQL connection string from the individual database settings.
+func (config DatabaseConfig) DSN() string {
+	return (&mysql.Config{
+		User:      strings.TrimSpace(config.User),
+		Passwd:    config.Password,
+		Net:       "tcp",
+		Addr:      net.JoinHostPort(strings.TrimSpace(config.Host), strconv.FormatUint(uint64(config.Port), 10)),
+		DBName:    strings.TrimSpace(config.Database),
+		ParseTime: true,
+		Loc:       time.UTC,
+	}).FormatDSN()
 }
 
 type LLMConfig struct {
@@ -85,6 +104,14 @@ func (config Config) Validate() error {
 	switch {
 	case config.Discord.HTTPTimeout <= 0:
 		return errors.New("DISCORD_HTTP_TIMEOUT must be greater than zero")
+	case strings.TrimSpace(config.Database.Host) == "":
+		return errors.New("MYSQL_HOST must not be empty")
+	case config.Database.Port == 0:
+		return errors.New("MYSQL_PORT must be greater than zero")
+	case strings.TrimSpace(config.Database.User) == "":
+		return errors.New("MYSQL_USER must not be empty")
+	case strings.TrimSpace(config.Database.Database) == "":
+		return errors.New("MYSQL_DATABASE must not be empty")
 	case config.Database.MaxOpenConns < 2:
 		return errors.New("MYSQL_MAX_OPEN_CONNS must be at least two because the scheduler holds a dedicated lock connection")
 	case config.Database.MaxIdleConns < 0:

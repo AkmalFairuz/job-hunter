@@ -111,6 +111,22 @@ an OpenAI-compatible API, and sends matching jobs to Discord.
    ./jobbot
    ```
 
+### Docker
+
+Tagged releases publish `jobbot` to GitHub Container Registry. After creating
+your `.env`, start the latest image and its MySQL database with:
+
+```sh
+docker compose up -d
+```
+
+The MySQL schema is initialized from `migrations/001_jobbot.sql` when its
+Docker volume is first created. Configure the connection with the individual
+`MYSQL_HOST`, `MYSQL_PORT`, `MYSQL_DATABASE`, `MYSQL_USER`, and
+`MYSQL_PASSWORD` variables. The Compose-oriented `.env.example` uses the
+`mysql` service hostname; use `127.0.0.1` instead when running `jobbot`
+outside Docker.
+
 Invite the Discord application with the `bot` and `applications.commands`
 scopes. Notification channels must allow View Channel, Send Messages, Embed
 Links, and Use Application Commands.

@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/go-sql-driver/mysql"
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -37,13 +37,7 @@ type Store struct {
 }
 
 func OpenStore(ctx context.Context, config DatabaseConfig) (*Store, error) {
-	dsn, err := mysql.ParseDSN(config.DSN)
-	if err != nil {
-		return nil, fmt.Errorf("parse MySQL DSN: %w", err)
-	}
-	dsn.ParseTime = true
-	dsn.Loc = time.UTC
-	db, err := sqlx.Open("mysql", dsn.FormatDSN())
+	db, err := sqlx.Open("mysql", config.DSN())
 	if err != nil {
 		return nil, fmt.Errorf("open MySQL: %w", err)
 	}
