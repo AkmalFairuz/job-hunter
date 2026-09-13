@@ -1,5 +1,8 @@
 # job-hunter
 
+[![Go Reference](https://pkg.go.dev/badge/github.com/akmalfairuz/job-hunter.svg)](https://pkg.go.dev/github.com/akmalfairuz/job-hunter)
+[![Compile](https://github.com/AkmalFairuz/job-hunter/actions/workflows/compile.yml/badge.svg)](https://github.com/AkmalFairuz/job-hunter/actions/workflows/compile.yml)
+
 `job-hunter` is a Go toolkit for finding jobs from LinkedIn's public listings.
 It includes:
 
@@ -34,6 +37,8 @@ Search one or more locations:
   --results 20 \
   --hours-old 24
 ```
+
+![Example jobfinder table output](docs/images/jobfinder-output-example.png)
 
 Table output is used by default. Other supported formats are `wide` and
 `json`:
@@ -84,6 +89,8 @@ search succeeds.
 
 `jobbot` stores named searches, runs them on a schedule, filters results with
 an OpenAI-compatible API, and sends matching jobs to Discord.
+
+![Example jobbot Discord notification](docs/images/jobbot-embed-example.png)
 
 ### Setup
 
