@@ -23,3 +23,17 @@ jobs:
 
       - name: Compile packages
         run: go build ./...
+
+      - name: Check formatting
+        run: |
+          unformatted=$(gofmt -l .)
+          if [ -n "$unformatted" ]; then
+            echo "$unformatted"
+            exit 1
+          fi
+
+      - name: Vet packages
+        run: go vet ./...
+
+      - name: Run tests
+        run: go test -race ./...
