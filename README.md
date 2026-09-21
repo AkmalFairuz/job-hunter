@@ -91,6 +91,15 @@ Set `FetchDescription` when descriptions and detail-page metadata are needed.
 The library can return partial results together with an error if only part of a
 search succeeds.
 
+### Testing
+
+The finder tests search LinkedIn directly, so they are behind the `e2e`
+build tag:
+
+```sh
+go test -tags e2e ./finder
+```
+
 ## Discord bot
 
 `jobbot` stores named searches, runs them on a schedule, filters results with
